@@ -2,6 +2,8 @@ import csv
 import io
 from pathlib import Path
 
+import yaml
+
 from generate import read_yaml
 
 ROOT = Path(__file__).resolve().parent
@@ -49,5 +51,14 @@ def render_catalog():
     return buffer.getvalue()
 
 
+def main():
+    try:
+        OUTPUT.write_text(render_catalog(), encoding="utf-8", newline="")
+    except (OSError, ValueError, KeyError, TypeError, yaml.YAMLError) as error:
+        raise SystemExit(f"Catalogue generation failed: {error}") from error
+
+    print(f"Generated {OUTPUT.relative_to(ROOT.parent.parent).as_posix()}")
+
+
 if __name__ == "__main__":
-    OUTPUT.write_text(render_catalog(), encoding="utf-8", newline="")
+    main()
