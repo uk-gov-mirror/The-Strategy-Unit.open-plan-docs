@@ -5,6 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+import generate_catalog
 import yaml
 
 import generate
@@ -124,6 +125,19 @@ class GenerationTests(unittest.TestCase):
                 else:
                     self.assertNotIn("## Notes", page)
 
+    # Renders the expected CSV in memory and compares it with the file on disk
+    def test_generated_catalog_is_current(self):
+        path = generate_catalog.OUTPUT
+        self.assertTrue(
+            path.is_file(),
+            f"Missing {path.name}; run generate_catalog.py",
+        )
+        self.assertEqual(
+            path.read_text(encoding="utf-8"),
+            generate_catalog.render_catalog(),
+            f"{path.name} is out of date; run generate_catalog.py "
+            "and commit the updated CSV",
+        )
 
 if __name__ == "__main__":
     unittest.main()

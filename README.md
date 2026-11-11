@@ -33,7 +33,7 @@ uv run zensical build --clean
 
 ## Generating functional area documentation
 
-Functional area pages combine four shared reference files with page-specific narrative content and a common template. Maintain these sources and commit the generated Markdown alongside any source changes.
+Functional area pages combine four shared reference files with page-specific narrative content and a common template. Maintain these sources and commit the generated Markdown and catalogue CSV alongside any source changes.
 
 Generation is a separate step: serving or building the site does not itself regenerate these pages.
 
@@ -42,6 +42,7 @@ Generation is a separate step: serving or building the site does not itself rege
 ```text
 generate/functional-areas/
 ├── generate.py
+├── generate_catalog.py
 ├── test_generate.py
 ├── content/
 │   └── <page-slug>.yaml
@@ -50,6 +51,8 @@ generate/functional-areas/
 │   ├── classification_register.yaml
 │   ├── conversion_archetypes_catalog.yaml
 │   └── functional_area_specifications.yaml
+│   └── fun_area_catalog.csv (generated)
+│   └── daycase_tretspef_mapping.xlsx
 └── templates/
     └── fun_area_page.md
 ```
@@ -73,13 +76,15 @@ The specifications file links items by ID. Keep `functional_area_id` in each con
 
 The generator assembles and validates documentation. The calculations are implemented separately in [capacity conversion logic](https://github.com/The-Strategy-Unit/nhp_capacity_conversion_logic).
 
-### Generate pages
+### Generate pages and catalogue
 
 ```bash
 uv run python generate/functional-areas/generate.py
+uv run python generate/functional-areas/generate_catalog.py
 ```
+The catalogue is written to `generate/functional-areas/references/fun_area_catalog.csv`. It contains one row per functional area and uses the functional area specification and the conversion archetype catalogue. Run both commands routinely; if the catalogue is unchanged, there is no CSV change to commit.
 
-Review the resulting changes in `docs/functional-areas/`. Do not edit generated pages directly: regeneration overwrites edits. Edit the content YAML, reference files or template instead.
+Review the resulting changes in `docs/functional-areas/` and in the catalogue CSV. Make edits in the source files or template, since regeneration overwrites the generated files.
 
 ### Run checks
 
@@ -87,9 +92,9 @@ Review the resulting changes in `docs/functional-areas/`. Do not edit generated 
 uv run python -m unittest discover -s generate/functional-areas -p test_generate.py
 ```
 
-The tests check selected reference-validation rules, nested classification references, dependency cycles and generated page structure. They also verify that each content file has a corresponding Markdown page matching the current sources.
+The tests check selected reference-validation rules, nested classification references, dependency cycles and generated page structure. They also verify that each content file has a corresponding Markdown page and that both the Markdown and the catalogue CSV match freshly rendered output.
 
-When editing locally, regenerate the pages and then run the tests. To check that pages are already up to date—for example, in CI—run the tests without regenerating first.
+When editing locally, regenerate the pages and then run the tests. In CI, run the tests without regenerating first so they can detect outdated committed files. The tests compare the files with the expected output without overwriting them.
 
 These checks do not verify clinical logic, formula accuracy, visual layout or agreement with the model implementation. Review the rendered pages and run the site build separately.
 
@@ -99,7 +104,7 @@ These checks do not verify clinical logic, formula accuracy, visual layout or ag
 2. Update the relevant reference files if rules, assumptions or relationships have changed
 3. Regenerate the pages and run the tests
 4. Preview the affected pages and build the site
-5. Review the Git diff and commit source changes with the generated Markdown
+5. Review the Git diff and commit the source changes with any updated Markdown and catalogue CSV
 
 Shared reference or template changes may affect several pages. Review all affected output.
 
@@ -108,7 +113,7 @@ Shared reference or template changes may affect several pages. Review all affect
 1. Define the functional area in the specification and ensure its referenced classifications, assumptions and archetype exist
 2. Add a content YAML file using an existing page as a starting point. Set `functional_area_id` to the specification ID
 3. Choose a readable, service-first filename, such as `maternity-assessment-beds.yaml`
-4. Regenerate and run the tests
+4. Regenerate the pages and catalogue and run the tests
 5. Add or update the explicit navigation entry in `zensical.toml` and links from the functional area index
 6. Preview the page, check related exclusions and deductions, and build the site
 
