@@ -22,15 +22,15 @@ COLUMNS = (
 
 def render_catalog():
     """Return the generated catalogue as CSV text without writing a file."""
-    areas = read_yaml(
-        REFERENCES / "functional_area_specifications.yaml"
-    )["functional_areas"]
+    areas = read_yaml(REFERENCES / "functional_area_specifications.yaml")[
+        "functional_area_specifications"
+    ]
 
     archetypes = {
         row["id"]: row
-        for row in read_yaml(
-            REFERENCES / "conversion_archetypes_catalog.yaml"
-        )["conversion_archetypes"]
+        for row in read_yaml(REFERENCES / "conversion_archetypes_catalog.yaml")[
+            "conversion_archetypes"
+        ]
     }
 
     buffer = io.StringIO(newline="")
@@ -39,14 +39,16 @@ def render_catalog():
 
     for area in sorted(areas, key=lambda row: row["id"]):
         archetype = archetypes[area["archetype_id"]]
-        writer.writerow({
-            "Functional Area ID": area["id"],
-            "Conversion Archetype": archetype["conversion_archetype"],
-            "Operational Constraint": archetype["operational_constraint"],
-            "Primary Workload Object": area["primary_workload_object"],
-            "Output Type": area["output_type"],
-            "Care Setting": area["care_setting"],
-        })
+        writer.writerow(
+            {
+                "Functional Area ID": area["id"],
+                "Conversion Archetype": archetype["conversion_archetype"],
+                "Operational Constraint": archetype["operational_constraint"],
+                "Primary Workload Object": area["primary_workload_object"],
+                "Output Type": area["output_type"],
+                "Care Setting": area["care_setting"],
+            }
+        )
 
     return buffer.getvalue()
 

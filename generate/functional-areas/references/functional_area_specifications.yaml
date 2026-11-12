@@ -1,3 +1,4 @@
+functional_area_specifications:
 - id: AE_BAYS
   output_type: bays
   care_setting: AE
