@@ -72,7 +72,7 @@ nav = [
             {"Assumptions Register" = "technical-information/assumptions-register.md"},
             {"Conversion Archetypes Catalogue" = "technical-information/conversion-archetypes-catalogue.md"}
         ]}, 
-        {"Calculation Traceability Matrix" = "technical-information/calculation-traceability-matrix.md"},
+        {"Functional Area Specifications" = "technical-information/functional-area-specifications.md"},
         {"QA Templates" = "technical-information/qa-templates.md"},
         {"Episode methodology" = "technical-information/episode-level.md"},
         {"Developer Info" = "technical-information/dev_info.md"}
